@@ -1,1 +1,29 @@
-console.log("hello, world")
+import readline from 'readline-sync';
+
+interface Content {
+  searchTerm: string;
+  prefix: string;
+}
+
+function start() {
+  const content = {} as Content;
+
+  content.searchTerm = askAndReturnSearchTerm();
+  content.prefix = askAndReturnPrefix();
+
+  function askAndReturnSearchTerm() {
+    return readline.question('Type a Wikipedia search term: ');
+  }
+
+  function askAndReturnPrefix() {
+    const prefixes = ['Who is', 'What is', 'The history of'];
+    const selectedPrefixIndex = readline.keyInSelect(prefixes);
+    const selectedPrefix = prefixes[selectedPrefixIndex];
+
+    return selectedPrefix;
+  }
+
+  console.log(content);
+}
+
+start();
