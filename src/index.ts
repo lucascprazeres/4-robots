@@ -1,15 +1,15 @@
 import readline from 'readline-sync';
 
-interface Content {
+interface Query {
   searchTerm: string;
   prefix: string;
 }
 
 function start() {
-  const content = {} as Content;
+  const query = {} as Query;
 
-  content.searchTerm = askAndReturnSearchTerm();
-  content.prefix = askAndReturnPrefix();
+  query.searchTerm = askAndReturnSearchTerm();
+  query.prefix = askAndReturnPrefix();
 
   function askAndReturnSearchTerm() {
     return readline.question('Type a Wikipedia search term: ');
@@ -23,7 +23,7 @@ function start() {
     return selectedPrefix;
   }
 
-  console.log(content);
+  console.log(query);
 }
 
 start();
