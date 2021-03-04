@@ -1,11 +1,14 @@
 // @ts-ignore
 import algorithmia from 'algorithmia';
-import { Query } from '../interfaces';
+// @ts-ignore
+import SentenceBoundaryDetenction from 'sbd';
+import { Query, Sentence } from '../interfaces';
 
 async function textRobot(query: Query) {
   await fetchContentFromWikipedia(query);
   sanitizeContent(query);
-  // breakContentIntoSentences(query);
+  breakContentIntoSentences(query);
+  console.log(query.sentences);
 
   async function fetchContentFromWikipedia(query: Query) {
     const algotihmiaAuthenticated = algorithmia(process.env.ALGORITHMIA_KEY);
@@ -38,6 +41,20 @@ async function textRobot(query: Query) {
     function removeDatesInParentheses(text: string) {
       return text.replace(/\((?:\([^()]*\)|[^()])*\)/gm, '').replace(/  /g,' ');
     }
+  }
+
+  function breakContentIntoSentences(query: Query) {
+    query.sentences = [] as Sentence[];
+  
+    const sentences = SentenceBoundaryDetenction.sentences(query.sourceContentSanitized);
+    
+    sentences.forEach((sentence: string) => {
+      query.sentences.push({
+        text: sentence,
+        keywords: [],
+        images: [],
+      });
+    }); 
   }
 }
 
