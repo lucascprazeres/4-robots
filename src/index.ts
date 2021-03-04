@@ -1,15 +1,15 @@
+import 'dotenv/config';
 import readline from 'readline-sync';
+import { Query } from './interfaces';
+import robots from './robots';
 
-interface Query {
-  searchTerm: string;
-  prefix: string;
-}
-
-function start() {
+async function start() {
   const query = {} as Query;
 
   query.searchTerm = askAndReturnSearchTerm();
   query.prefix = askAndReturnPrefix();
+
+  await robots.text(query);
 
   function askAndReturnSearchTerm() {
     return readline.question('Type a Wikipedia search term: ');
