@@ -1,6 +1,9 @@
 # javascript build
 build
 
+#state file
+state.json
+
 # Logs
 logs
 *.log
