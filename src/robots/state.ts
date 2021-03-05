@@ -1,9 +1,9 @@
 import fs from 'fs';
-import { Query } from '../interfaces';
+import { State } from '../interfaces';
 
 const contentFilePath = './state.json';
 
-function save(state: Query) {
+function save(state: State) {
   const stringifyiedState = JSON.stringify(state);
   return fs.writeFileSync(contentFilePath, stringifyiedState);
 }

@@ -1,4 +1,4 @@
-export interface Query {
+export interface State {
   searchTerm: string;
   prefix: string;
   sourceContentOriginal: string;
