@@ -8,7 +8,7 @@ function save(state: State) {
   return fs.writeFileSync(contentFilePath, stringifyiedState);
 }
 
-function load() {
+function load(): State {
   const fileBuffer = fs.readFileSync(contentFilePath, 'utf-8');
   const state = JSON.parse(fileBuffer);
   return state;
