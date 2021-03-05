@@ -1,15 +1,15 @@
 import readline from 'readline-sync';
-import { Query } from '../interfaces';
+import { State } from '../interfaces';
 import stateRobot from './state';
 
 export default function inputRobot() {
-  const query = {
+  const state = {
     maximumSentences: 7,
-  } as Query;
+  } as State;
 
-  query.searchTerm = askAndReturnSearchTerm();
-  query.prefix = askAndReturnPrefix();
-  stateRobot.save(query);
+  state.searchTerm = askAndReturnSearchTerm();
+  state.prefix = askAndReturnPrefix();
+  stateRobot.save(state);
 
   function askAndReturnSearchTerm() {
     return readline.question('Type a Wikipedia search term: ');

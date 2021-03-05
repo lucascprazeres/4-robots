@@ -1,4 +1,4 @@
-export interface Query {
+export interface State {
   searchTerm: string;
   prefix: string;
   sourceContentOriginal: string;
@@ -11,4 +11,5 @@ export interface Sentence {
   text: string;
   keywords: string[];
   images: string[];
+  googleSearchQuery?: string;
 }

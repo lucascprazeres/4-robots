@@ -1,14 +1,14 @@
 import fs from 'fs';
-import { Query } from '../interfaces';
+import { State } from '../interfaces';
 
 const contentFilePath = './state.json';
 
-function save(state: Query) {
+function save(state: State) {
   const stringifyiedState = JSON.stringify(state);
   return fs.writeFileSync(contentFilePath, stringifyiedState);
 }
 
-function load() {
+function load(): State {
   const fileBuffer = fs.readFileSync(contentFilePath, 'utf-8');
   const state = JSON.parse(fileBuffer);
   return state;
