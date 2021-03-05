@@ -3,6 +3,7 @@ export interface Query {
   prefix: string;
   sourceContentOriginal: string;
   sourceContentSanitized: string;
+  maximumSentences: number;
   sentences: Sentence[];
 }
 

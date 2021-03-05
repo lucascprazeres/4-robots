@@ -4,12 +4,15 @@ import { Query } from './interfaces';
 import robots from './robots';
 
 async function start() {
-  const query = {} as Query;
+  const query = {
+    maximumSentences: 7,
+  } as Query;
 
   query.searchTerm = askAndReturnSearchTerm();
   query.prefix = askAndReturnPrefix();
 
   await robots.text(query);
+  console.log(query.sentences);
 
   function askAndReturnSearchTerm() {
     return readline.question('Type a Wikipedia search term: ');
@@ -22,8 +25,6 @@ async function start() {
 
     return selectedPrefix;
   }
-
-  console.log(query);
 }
 
 start();
