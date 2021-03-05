@@ -6,7 +6,9 @@ import { Query, Sentence } from '../interfaces';
 import NaturalLanguageUnderstandingV1 from 'ibm-watson/natural-language-understanding/v1';
 import { IamAuthenticator } from 'ibm-watson/auth';
 
-async function textRobot(query: Query) {
+import stateRobot from './state';
+
+async function textRobot() {
   const watsonStringifyiedCredentials = process.env.IBM_WATSON_CREDENTIALS || '{}';
   const watsonCredentials = JSON.parse(watsonStringifyiedCredentials);
   const nlu = new NaturalLanguageUnderstandingV1({
@@ -15,11 +17,15 @@ async function textRobot(query: Query) {
     serviceUrl: 'https://api.us-south.natural-language-understanding.watson.cloud.ibm.com'
   });
 
+  const query = stateRobot.load();
+
   await fetchContentFromWikipedia(query);
   sanitizeContent(query);
   breakContentIntoSentences(query);
   limitMaximumSenteces(query);
   await fetchKeywordsOfAllSenteces(query);
+
+  stateRobot.save(query);
 
   async function fetchContentFromWikipedia(query: Query) {
     const algotihmiaAuthenticated = Algorithmia.client(process.env.ALGORITHMIA_KEY);
