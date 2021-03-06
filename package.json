@@ -10,6 +10,7 @@
     "start": "node build/index.js"
   },
   "devDependencies": {
+    "@types/gm": "^1.18.9",
     "@types/node": "^14.14.31",
     "@types/readline-sync": "^1.4.3",
     "ts-node-dev": "^1.1.6",
@@ -18,6 +19,7 @@
   "dependencies": {
     "algorithmia": "^0.3.10",
     "dotenv": "^8.2.0",
+    "gm": "^1.23.1",
     "googleapis": "^67.1.1",
     "ibm-watson": "^6.0.3",
     "image-downloader": "^4.0.2",

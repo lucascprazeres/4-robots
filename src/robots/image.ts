@@ -1,6 +1,7 @@
 import { google } from 'googleapis';
 // @ts-ignore
 import download from 'image-downloader';
+
 import { State } from '../interfaces';
 import stateRobot from './state';
 
@@ -15,7 +16,6 @@ async function imageRobot() {
 
   await fetchImagesOfAllSentences(state);
   await downloadAllImages(state);
-
   stateRobot.save(state);
 
   async function fetchImagesOfAllSentences(state: State) {
