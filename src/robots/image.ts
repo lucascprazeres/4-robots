@@ -1,6 +1,7 @@
 import { google } from 'googleapis';
 // @ts-ignore
 import download from 'image-downloader';
+import gm from 'gm';
 import { State } from '../interfaces';
 import stateRobot from './state';
 
@@ -17,6 +18,7 @@ async function imageRobot() {
   await downloadAllImages(state);
 
   stateRobot.save(state);
+  await convertAllImages(state);
 
   async function fetchImagesOfAllSentences(state: State) {
     for (let sentence of state.sentences) {
@@ -75,6 +77,49 @@ async function imageRobot() {
     return download.image({
       url,
       dest: `./images/${filename}`
+    })
+  }
+
+  async function convertAllImages(state: State) {
+    for (let sentenceIndex = 0; sentenceIndex < state.sentences.length; sentenceIndex++) {
+      await convertImageInIndex(sentenceIndex);
+    }
+  }
+
+  async function convertImageInIndex(sentenceIndex: number) {
+    return new Promise<void>((resolve, reject) => {
+      const inputFile = `./images/${sentenceIndex}-original.png[0]`;
+      const outputFile = `./images/${sentenceIndex}-converted.png`;
+      const [width, height] = [1920, 1080];
+
+      gm
+        .subClass({ imageMagick: true })(inputFile)
+        .out('(')
+          .out('-clone')
+          .out('0')
+          .out('-background', 'white')
+          .out('-blur', '0x9')
+          .out('-resize', `${width}x${height}^`)
+        .out(')')
+        .out('(')
+          .out('-clone')
+          .out('0')
+          .out('-background', 'white')
+          .out('-resize', `${width}x${height}`)
+        .out(')')
+        .out('-delete', '0')
+        .out('-gravity', 'center')
+        .out('-compose', 'over')
+        .out('-composite')
+        .out('-extent', `${width}x${height}`)
+        .write(outputFile, (error) => {
+          if (error) {
+            return reject(error)
+          }
+
+          console.log(`> [video-robot] Image converted: ${outputFile}`)
+          resolve()
+        })
     })
   }
 }
