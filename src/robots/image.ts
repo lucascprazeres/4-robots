@@ -1,4 +1,6 @@
 import { google } from 'googleapis';
+// @ts-ignore
+import download from 'image-downloader';
 import { State } from '../interfaces';
 import stateRobot from './state';
 
@@ -12,6 +14,7 @@ async function imageRobot() {
   const state = stateRobot.load();
 
   await fetchImagesOfAllSentences(state);
+  await downloadAllImages(state);
 
   stateRobot.save(state);
 
@@ -42,6 +45,37 @@ async function imageRobot() {
     });
 
     return imagesURL;
+  }
+
+  async function downloadAllImages(state: State) {
+    state.downloadedImages = [];
+
+    for (let sentenceIndex = 0; sentenceIndex < state.sentences.length; sentenceIndex++) {
+      const images = state.sentences[sentenceIndex].images;
+
+      for (let imageIndex = 0; imageIndex < images.length; imageIndex++) {
+        const imageURL = images[imageIndex];
+
+        try {
+          if (state.downloadedImages.includes(imageURL)) {
+            throw new Error('Image was already downloaded.');
+          }
+
+          await downloadAndSaveImage(imageURL, `${sentenceIndex}-original.png`);
+
+          console.log(`> [${sentenceIndex}][${imageIndex}] Sucessfully downloaded image: ${imageURL}`);
+        } catch (err) {
+          console.log(`> [${sentenceIndex}][${imageIndex}] Failed to download image ${imageURL}: ${err}`)
+        }
+      }
+    }
+  }
+
+  async function downloadAndSaveImage(url: string, filename: string) {
+    return download.image({
+      url,
+      dest: `./images/${filename}`
+    })
   }
 }
 

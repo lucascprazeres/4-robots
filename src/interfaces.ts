@@ -5,6 +5,7 @@ export interface State {
   sourceContentSanitized: string;
   maximumSentences: number;
   sentences: Sentence[];
+  downloadedImages: string[];
 }
 
 export interface Sentence {

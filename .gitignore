@@ -4,6 +4,9 @@ build
 #state file
 state.json
 
+#downloads
+images
+
 # Logs
 logs
 *.log
