@@ -18,12 +18,13 @@ const imageMagick = gm.subClass({ imageMagick: true });
 async function imageRobot() {
   const state = stateRobot.load();
 
-  await fetchImagesOfAllSentences(state);
-  await downloadAllImages(state);
+  // await fetchImagesOfAllSentences(state);
+  // await downloadAllImages(state);
   await convertAllImages(state);
-  await createSentencesOfAllImages(state);
+  // await createSentencesOfAllImages(state);
+  await createYoutubeThumbnail();
   
-  stateRobot.save(state);
+  // stateRobot.save(state);
 
   async function fetchImagesOfAllSentences(state: State) {
     for (let sentence of state.sentences) {
@@ -154,6 +155,20 @@ async function imageRobot() {
           resolve();
         });    
     });
+  }
+
+  async function createYoutubeThumbnail() {
+    return new Promise<void>((resolve, reject) => {
+      imageMagick('./images/0-converted.png')
+      .write('./images/youtube-thumbnail.jpg', error => {
+        if (error) {
+          return reject(error);
+        }
+
+        console.log('> created youtube thumbnail');
+        resolve();
+      })
+    })
   }
 }
 
