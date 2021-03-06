@@ -2,23 +2,28 @@ import { google } from 'googleapis';
 // @ts-ignore
 import download from 'image-downloader';
 import gm from 'gm';
+
 import { State } from '../interfaces';
 import stateRobot from './state';
+
+import templateSettings from './settings/template';
 
 const customSearch = google.customsearch('v1');
 const googleSearchCredentials = {
   auth: process.env.CUSTOM_SEARCH_API_KEY || '',
   cx: process.env.SEARCH_ENGINE_ID || '',
 }
+const imageMagick = gm.subClass({ imageMagick: true });
 
 async function imageRobot() {
   const state = stateRobot.load();
 
   await fetchImagesOfAllSentences(state);
   await downloadAllImages(state);
-
-  stateRobot.save(state);
   await convertAllImages(state);
+  await createSentencesOfAllImages(state);
+  
+  stateRobot.save(state);
 
   async function fetchImagesOfAllSentences(state: State) {
     for (let sentence of state.sentences) {
@@ -92,8 +97,7 @@ async function imageRobot() {
       const outputFile = `./images/${sentenceIndex}-converted.png`;
       const [width, height] = [1920, 1080];
 
-      gm
-        .subClass({ imageMagick: true })(inputFile)
+      imageMagick(inputFile)
         .out('(')
           .out('-clone')
           .out('0')
@@ -121,6 +125,35 @@ async function imageRobot() {
           resolve()
         })
     })
+  }
+
+  async function createSentencesOfAllImages(state: State) {
+    for (let sentenceIndex = 0; sentenceIndex < state.sentences.length; sentenceIndex++) {
+      await createSentenceImage(sentenceIndex, state.sentences[sentenceIndex].text);
+    }
+  }
+
+  async function createSentenceImage(sentenceIndex: number, sentenceText: string) {
+    return new Promise<void>((resolve, reject) => {
+      const outputFile = `./images/${sentenceIndex}-sentence.png`;
+
+      const { width, height, gravity } = templateSettings[sentenceIndex];
+  
+      imageMagick(width, height)
+        .out('-gravity', gravity)
+        .out('-background', 'transparent')
+        .out('-fill', 'white')
+        .out('-kerning', '-1')
+        .out(`caption:${sentenceText}`)
+        .write(outputFile, error => {
+          if (error) {
+            return reject(error);
+          }
+
+          console.log(`> sentence created: ${outputFile}`);
+          resolve();
+        });    
+    });
   }
 }
 
