@@ -5,17 +5,18 @@ import download from 'image-downloader';
 import { State } from '../interfaces';
 import stateRobot from './state';
 
-const customSearch = google.customsearch('v1');
-const googleSearchCredentials = {
-  auth: process.env.CUSTOM_SEARCH_API_KEY || '',
-  cx: process.env.SEARCH_ENGINE_ID || '',
-}
-
 async function imageRobot() {
+  const customSearch = google.customsearch('v1');
+  const googleSearchCredentials = {
+    auth: process.env.CUSTOM_SEARCH_API_KEY || '',
+    cx: process.env.SEARCH_ENGINE_ID || '',
+  }
+
   const state = stateRobot.load();
 
   await fetchImagesOfAllSentences(state);
   await downloadAllImages(state);
+
   stateRobot.save(state);
 
   async function fetchImagesOfAllSentences(state: State) {

@@ -7,6 +7,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "tsnd src/index.ts --ingore-watch node_modules --transpileOnly",
+    "build": "tsc",
     "start": "node build/index.js"
   },
   "devDependencies": {
