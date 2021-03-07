@@ -4,9 +4,9 @@ import { State } from '../interfaces';
 import stateRobot from './state';
 import templateSettings from './settings/template';
 
-const imageMagick = gm.subClass({ imageMagick: true });
-
 async function videoRobot() {
+  const imageMagick = gm.subClass({ imageMagick: true });
+
   const state = stateRobot.load();
 
   await convertAllImages(state);
@@ -27,17 +27,17 @@ async function videoRobot() {
 
       imageMagick(inputFile)
         .out('(')
-          .out('-clone')
-          .out('0')
-          .out('-background', 'white')
-          .out('-blur', '0x9')
-          .out('-resize', `${width}x${height}^`)
+        .out('-clone')
+        .out('0')
+        .out('-background', 'white')
+        .out('-blur', '0x9')
+        .out('-resize', `${width}x${height}^`)
         .out(')')
         .out('(')
-          .out('-clone')
-          .out('0')
-          .out('-background', 'white')
-          .out('-resize', `${width}x${height}`)
+        .out('-clone')
+        .out('0')
+        .out('-background', 'white')
+        .out('-resize', `${width}x${height}`)
         .out(')')
         .out('-delete', '0')
         .out('-gravity', 'center')
@@ -66,7 +66,7 @@ async function videoRobot() {
       const outputFile = `./images/${sentenceIndex}-sentence.png`;
 
       const { width, height, gravity } = templateSettings[sentenceIndex];
-  
+
       imageMagick(width, height)
         .out('-gravity', gravity)
         .out('-background', 'transparent')
@@ -80,21 +80,21 @@ async function videoRobot() {
 
           console.log(`> sentence created: ${outputFile}`);
           resolve();
-        });    
+        });
     });
   }
 
   async function createYoutubeThumbnail() {
     return new Promise<void>((resolve, reject) => {
       imageMagick('./images/0-converted.png')
-      .write('./images/youtube-thumbnail.jpg', error => {
-        if (error) {
-          return reject(error);
-        }
+        .write('./images/youtube-thumbnail.jpg', error => {
+          if (error) {
+            return reject(error);
+          }
 
-        console.log('> created youtube thumbnail');
-        resolve();
-      })
+          console.log('> created youtube thumbnail');
+          resolve();
+        })
     })
   }
 }

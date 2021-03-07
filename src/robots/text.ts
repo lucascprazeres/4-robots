@@ -70,6 +70,7 @@ async function textRobot() {
         text: sentence,
         keywords: [],
         images: [],
+        googleSearchQuery: '',
       });
     });
   }
