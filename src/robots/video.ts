@@ -1,4 +1,12 @@
 import gm from 'gm';
+// @ts-ignore
+import videoshow from 'videoshow';
+import ffmpeg from 'fluent-ffmpeg';
+// @ts-ignore
+import { path as ffmpegPath } from '@ffmpeg-installer/ffmpeg';
+// @ts-ignore
+import { path as ffprobePath } from '@ffprobe-installer/ffprobe';
+import path from 'path';
 
 import { State } from '../interfaces';
 import stateRobot from './state';
@@ -7,11 +15,16 @@ import templateSettings from './settings/template';
 async function videoRobot() {
   const imageMagick = gm.subClass({ imageMagick: true });
 
+  ffmpeg.setFfmpegPath(ffmpegPath);
+  ffmpeg.setFfprobePath(ffprobePath);
+
   const state = stateRobot.load();
 
   await convertAllImages(state);
   await createAllSentenceImages(state);
   await createYoutubeThumbnail();
+  createFfmpegScript(state);
+  await renderVideoWithFfmpeg(state);
 
   async function convertAllImages(state: State) {
     for (let sentenceIndex = 0; sentenceIndex < state.sentences.length; sentenceIndex++) {
@@ -96,6 +109,83 @@ async function videoRobot() {
           resolve();
         })
     })
+  }
+
+  function createFfmpegScript(state: State) {
+    stateRobot.saveScript(state);
+  }
+
+  async function renderVideoWithFfmpeg(state: State) {
+    console.log(`> [video-robot] Rendering video with FFmpeg...`);
+
+    return new Promise<void>((resolve, reject) => {
+      let images = [];
+
+      const audio = path.join(__dirname, '../../templates/1/newsroom.mp3');
+      const video = path.join(__dirname, '../../images/video-maker.mp4');
+
+      for (let sentenceIndex = 0; sentenceIndex < state.sentences.length; sentenceIndex++) {
+        images.push({
+          path: `./images/${sentenceIndex}-converted.png`,
+          caption: state.sentences[sentenceIndex].text,
+        });
+      }
+
+      const audioParams = {
+        fade: true,
+        delay: 1,
+      };
+
+      const videoOptions = {
+        fps: 30,
+        loop: 5, // seconds
+        transition: true,
+        transitionDuration: 1, // seconds
+        videoBitrate: 1024,
+        videoCodec: 'libx264',
+        size: '640x?',
+        audioBitrate: '128k',
+        audioChannels: 2,
+        format: 'mp4',
+        pixelFormat: 'yuv420p',
+        useSubRipSubtitles: false, // Use ASS/SSA subtitles instead
+        subtitleStyle: {
+          Fontname: 'Verdana',
+          Fontsize: '30',
+          PrimaryColour: '11861244',
+          SecondaryColour: '11861244',
+          TertiaryColour: '11861244',
+          BackColour: '-2147483640',
+          Bold: '2',
+          Italic: '0',
+          BorderStyle: '2',
+          Outline: '2',
+          Shadow: '3',
+          Alignment: '1', // left, middle, right
+          MarginL: '40',
+          MarginR: '60',
+          MarginV: '40',
+        },
+      }
+
+      videoshow(images, videoOptions)
+        .audio(audio, audioParams)
+        .save(video)
+        .on('start', (command: any) => {
+          console.log('\n\n [ FFmpeg still working in ]:\n\n', command, '\n\n[ Please wait... ]');
+        })
+        .on('error', (err: any, stdout: any, stderr: any) => {
+          return reject(err);
+        })
+        .on('end', (output: any) => {
+          console.log(
+            '\n\n[video-robot] Finished processing. Video created:\n\n',
+            output,
+            '\n\n',
+          );
+          resolve();
+        })
+    });
   }
 }
 
