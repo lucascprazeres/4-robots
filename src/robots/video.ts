@@ -10,7 +10,6 @@ import path from 'path';
 
 import { State } from '../interfaces';
 import stateRobot from './state';
-import templateSettings from './settings/template';
 
 async function videoRobot() {
   const imageMagick = gm.subClass({ imageMagick: true });
@@ -21,7 +20,6 @@ async function videoRobot() {
   const state = stateRobot.load();
 
   await convertAllImages(state);
-  await createAllSentenceImages(state);
   await createYoutubeThumbnail();
   createFfmpegScript(state);
   await renderVideoWithFfmpeg(state);
@@ -66,35 +64,6 @@ async function videoRobot() {
           resolve()
         })
     })
-  }
-
-  async function createAllSentenceImages(state: State) {
-    for (let sentenceIndex = 0; sentenceIndex < state.sentences.length; sentenceIndex++) {
-      await createSentenceImage(sentenceIndex, state.sentences[sentenceIndex].text);
-    }
-  }
-
-  async function createSentenceImage(sentenceIndex: number, sentenceText: string) {
-    return new Promise<void>((resolve, reject) => {
-      const outputFile = `./images/${sentenceIndex}-sentence.png`;
-
-      const { width, height, gravity } = templateSettings[sentenceIndex];
-
-      imageMagick(width, height)
-        .out('-gravity', gravity)
-        .out('-background', 'transparent')
-        .out('-fill', 'white')
-        .out('-kerning', '-1')
-        .out(`caption:${sentenceText}`)
-        .write(outputFile, error => {
-          if (error) {
-            return reject(error);
-          }
-
-          console.log(`> sentence created: ${outputFile}`);
-          resolve();
-        });
-    });
   }
 
   async function createYoutubeThumbnail() {
@@ -150,21 +119,21 @@ async function videoRobot() {
         pixelFormat: 'yuv420p',
         useSubRipSubtitles: false, // Use ASS/SSA subtitles instead
         subtitleStyle: {
-          Fontname: 'Verdana',
-          Fontsize: '30',
+          Fontname: 'Arial',
+          Fontsize: '45',
           PrimaryColour: '11861244',
           SecondaryColour: '11861244',
           TertiaryColour: '11861244',
           BackColour: '-2147483640',
-          Bold: '2',
+          Bold: '3',
           Italic: '0',
           BorderStyle: '2',
           Outline: '2',
           Shadow: '3',
           Alignment: '1', // left, middle, right
-          MarginL: '40',
+          MarginL: '100',
           MarginR: '60',
-          MarginV: '40',
+          MarginV: '200',
         },
       }
 
