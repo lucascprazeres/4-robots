@@ -63,6 +63,7 @@ async function imageRobot() {
           }
 
           await downloadAndSaveImage(imageURL, `${sentenceIndex}-original.png`);
+          state.downloadedImages.push(imageURL);
 
           console.log(`> [${sentenceIndex}][${imageIndex}] Sucessfully downloaded image: ${imageURL}`);
         } catch (err) {
