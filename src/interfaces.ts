@@ -14,3 +14,5 @@ export interface Sentence {
   images: string[];
   googleSearchQuery: string;
 }
+
+ 
