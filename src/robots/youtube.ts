@@ -113,20 +113,22 @@ async function youtubeRobot() {
       sentence.text
     ).join('\n\n');
 
-    const requestParameters = {
-      part: 'snippet, status',
+    const requestParameters: youtube_v3.Params$Resource$Videos$Insert = {
+      part: ['snippet', 'contentDetails', 'status'],
       requestBody: {
-        title: videoTitle,
-        description: videoDescription,
-        tags: videoTags,
-      },
-      status: {
-        privacyStatus: 'unlisted',
+        snippet: {
+          title: videoTitle,
+          description: videoDescription,
+          tags: videoTags,
+        },
+        status: {
+          privacyStatus: 'unlisted',
+        },
       },
       media: {
         body: fs.createReadStream(videoFilePath),
       }
-    } as any;
+    };
 
     const youtubeResponse = await youtube.videos.insert(requestParameters, {
       onUploadProgress,
@@ -144,15 +146,13 @@ async function youtubeRobot() {
   // async function uploadThumbnail(videoInformation: youtube_v3.Schema$Video) {
   //   const videoId = videoInformation.id || '';
   //   const videoThumbnailFilePath = './images/youtube-thumbnail.jpeg';
-
-  //   const requestParameters = {
+  //   const requestParameters: youtube_v3.Params$Resource$Thumbnails$Set = {
   //     videoId,
   //     media: {
   //       mimeType: 'image/jpeg',
   //       body: fs.createReadStream(videoThumbnailFilePath),
   //     }
   //   };
-
   //   const youtubeResponse = await youtube.thumbnails.set(requestParameters);
   //   console.log('> thumbnail uploaded!');
   // }
