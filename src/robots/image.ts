@@ -21,7 +21,7 @@ async function imageRobot() {
 
   async function fetchImagesOfAllSentences(state: State) {
     for (let sentence of state.sentences) {
-      const query = `${state.searchTerm} ${sentence.keywords[0]}`;
+      const query = `${sentence.keywords[0]}`;
       sentence.images = await fetchGoogleAndReturnImageLinks(query);
 
       sentence.googleSearchQuery = query;
@@ -34,7 +34,7 @@ async function imageRobot() {
       q: query,
       searchType: 'image',
       imgSize: 'huge',
-      num: 2
+      num: 3
     });
 
     if (!response.data.items) {
@@ -64,8 +64,8 @@ async function imageRobot() {
 
           await downloadAndSaveImage(imageURL, `${sentenceIndex}-original.png`);
           state.downloadedImages.push(imageURL);
-
           console.log(`> [${sentenceIndex}][${imageIndex}] Sucessfully downloaded image: ${imageURL}`);
+          break;
         } catch (err) {
           console.log(`> [${sentenceIndex}][${imageIndex}] Failed to download image ${imageURL}: ${err}`)
         }
